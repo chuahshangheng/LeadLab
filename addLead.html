@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <base target="_top">
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Add Lead</title>
+      <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+      <?!= include('css'); ?>
+  </head>
+  <body>
+      <?!= navbar ?>
+      <div class="lead-form-container">
+          <h2>Add Lead</h2>
+          <form id="addLeadForm" onsubmit="showLoading()">
+              <div class="form-row">
+                  <div class="form-column">
+                      <label for="leadName">Lead Name</label>
+                      <input type="text" id="leadName" name="leadName" placeholder="Lead Name" required>
+                      
+                      <label for="email">Email</label>
+                      <input type="email" id="email" name="email" placeholder="Email" required>
+                      
+                      <label for="contactNo">Contact No.</label>
+                      <div class="phone-input-container">
+                          <select id="countryCode" name="countryCode" required>
+                              <option value="+1">+1 (USA/Canada)</option>
+                              <option value="+44">+44 (United Kingdom)</option>
+                              <option value="+61">+61 (Australia)</option>
+                              <option value="+64">+64 (New Zealand)</option>
+                              <option value="+91">+91 (India)</option>
+                              <option value="+86">+86 (China)</option>
+                              <option value="+81">+81 (Japan)</option>
+                              <option value="+49">+49 (Germany)</option>
+                              <option value="+33">+33 (France)</option>
+                              <option value="+39">+39 (Italy)</option>
+                              <option value="+34">+34 (Spain)</option>
+                              <option value="+52">+52 (Mexico)</option>
+                              <option value="+55">+55 (Brazil)</option>
+                              <option value="+27">+27 (South Africa)</option>
+                              <option value="+7">+7 (Russia)</option>
+                              <option value="+82">+82 (South Korea)</option>
+                              <option value="+65">+65 (Singapore)</option>
+                              <option value="+852">+852 (Hong Kong)</option>
+                              <option value="+886">+886 (Taiwan)</option>
+                              <option value="+60">+60 (Malaysia)</option>
+                              <option value="+66">+66 (Thailand)</option>
+                              <option value="+84">+84 (Vietnam)</option>
+                              <option value="+62">+62 (Indonesia)</option>
+                              <option value="+63">+63 (Philippines)</option>
+                              <option value="+966">+966 (Saudi Arabia)</option>
+                              <option value="+971">+971 (United Arab Emirates)</option>
+                              <option value="+20">+20 (Egypt)</option>
+                              <option value="+90">+90 (Turkey)</option>
+                              <option value="+54">+54 (Argentina)</option>
+                              <option value="+56">+56 (Chile)</option>
+                              <option value="+57">+57 (Colombia)</option>
+                              <option value="+51">+51 (Peru)</option>
+                              <option value="+598">+598 (Uruguay)</option>
+                              <option value="+1">+1 (Puerto Rico)</option>
+                          </select>
+                          <input type="tel" id="contactNo" name="contactNo" placeholder="Phone Number" required>
+                      </div>
+
+                      <input type="hidden" id="status" name="status" value="new">
+                  </div>
+
+                  <div class="form-column">
+                      <label for="city">City</label>
+                      <input type="text" id="city" name="city" placeholder="City" required>
+                      
+                      <label for="interestedIn">Interested In</label>
+                      <select id="interestedIn" name="interestedIn" required>
+                          <option value="" disabled selected>Interested In</option>
+                          <option value="Real Estate">Real Estate</option>
+                          <option value="Automobiles">Automobiles</option>
+                          <option value="Electronics">Electronics</option>
+                          <option value="Home Appliances">Home Appliances</option>
+                          <option value="Furniture">Furniture</option>
+                          <option value="Jobs">Jobs</option>
+                          <option value="Services">Services</option>
+                          <option value="Events">Events</option>
+                          <option value="Education">Education</option>
+                          <option value="Health & Fitness">Health & Fitness</option>
+                          <option value="Beauty & Fashion">Beauty & Fashion</option>
+                          <option value="Pets & Animals">Pets & Animals</option>
+                          <option value="Travel & Tourism">Travel & Tourism</option>
+                          <option value="Food & Beverages">Food & Beverages</option>
+                          <option value="Art & Collectibles">Art & Collectibles</option>
+                          <option value="Sports & Outdoors">Sports & Outdoors</option>
+                          <option value="Books & Media">Books & Media</option>
+                          <option value="Baby & Kids">Baby & Kids</option>
+                          <option value="Industrial Equipment">Industrial Equipment</option>
+                          <option value="Gardening & Outdoor Living">Gardening & Outdoor Living</option>
+                          <option value="Music & Instruments">Music & Instruments</option>
+                          <option value="Office Supplies & Equipment">Office Supplies & Equipment</option>
+                          <option value="Software & Applications">Software & Applications</option>
+                          <option value="Toys & Games">Toys & Games</option>
+                          <option value="DIY & Crafts">DIY & Crafts</option>
+                          <option value="Construction & Renovation">Construction & Renovation</option>
+                          <option value="Agricultural Products">Agricultural Products</option>
+                          <option value="Renewable Energy & Green Products">Renewable Energy & Green Products</option>
+                          <option value="Financial Services">Financial Services</option>
+                          <option value="Legal Services">Legal Services</option>
+                          <option value="Transportation & Logistics">Transportation & Logistics</option>
+                          <option value="Hospitality & Catering">Hospitality & Catering</option>
+                          <option value="Marketing & Advertising">Marketing & Advertising</option>
+                          <option value="Photography & Videography">Photography & Videography</option>
+                          <option value="IT & Networking">IT & Networking</option>
+                          <option value="Cleaning & Maintenance">Cleaning & Maintenance</option>
+                          <option value="Security & Surveillance">Security & Surveillance</option>
+                          <option value="Gifts & Occasions">Gifts & Occasions</option>
+                          <option value="Luxury Items">Luxury Items</option>
+                          <option value="Personal Development & Coaching">Personal Development & Coaching</option>
+                          <option value="Religious & Spiritual">Religious & Spiritual</option>
+                          <option value="Community & Social Services">Community & Social Services</option>
+                          <option value="Environment & Nature">Environment & Nature</option>
+                          <option value="Philanthropy & Non-Profits">Philanthropy & Non-Profits</option>
+                      </select>
+
+                      <label for="note">Note (optional)</label>
+                      <textarea id="note" name="note" placeholder="Note (optional)"></textarea>
+                  </div>
+              </div>
+              <input type="hidden" id="username" name="username" value="<?= userDetails.username ?>">
+              <input type="hidden" name="action" value="addLead">
+              <button type="submit">Submit</button>
+          </form>
+      </div>
+
+      <!-- Popup Box -->
+      <div id="popupBox" class="popup-box">
+          <div class="popup-content">
+              <div id="popupIcon" class="popup-icon"></div>
+              <h2 id="popupTitle">Title</h2>
+              <p id="popupMessage">Message</p>
+              <button id="popupButton" onclick="closePopup()">OK</button>
+          </div>
+      </div>
+      <script>
+          function showPopup(title, message, iconClass, onClose) {
+              document.getElementById('popupTitle').textContent = title;
+              document.getElementById('popupMessage').textContent = message;
+              var iconContainer = document.getElementById('popupIcon');
+              iconContainer.innerHTML = `<i class='bx ${iconClass}'></i>`;
+              iconContainer.className = `popup-icon ${iconClass === 'bxs-error-circle' ? 'error' : 'success'}`;
+              document.getElementById('popupBox').style.display = 'block';
+              document.getElementById('popupButton').onclick = function() {
+                  closePopup();
+                  if (onClose) onClose();
+                  document.querySelector('button[type="submit"]').textContent = 'Add Lead';
+              };
+          }
+
+          function closePopup() {
+              document.getElementById('popupBox').style.display = 'none';
+          }
+
+          function showLoading() {
+              document.querySelector('button[type="submit"]').textContent = 'Loading...';
+          }
+
+          document.getElementById('addLeadForm').addEventListener('submit', function(event) {
+              event.preventDefault();
+              var formData = new FormData(event.target);
+
+              fetch('<?= ScriptApp.getService().getUrl() ?>', {
+                  method: 'POST',
+                  body: formData
+              })
+              .then(response => response.json())
+              .then(data => {
+                  console.log("Response data:", data);
+                  showPopup(
+                      data.messageType === "success" ? "Success" : "Error",
+                      data.message,
+                      data.messageType === "success" ? "bxs-check-circle" : "bxs-error-circle",
+                      function() {
+                          if (data.messageType === "success" && data.redirect) {
+                              window.top.location.href = data.redirect;
+                          }
+                      }
+                  );
+              })
+              .catch(error => console.error('Error:', error));
+          });
+      </script>
+      <?!= include('js'); ?>
+  </body>
+</html>

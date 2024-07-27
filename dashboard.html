@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <?!= include('css'); ?>
+    <style>
+        /* CSS styles */
+        body {
+            display: flex;
+            flex-direction: row;
+        }
+        .blank-column {
+            width: 260px;
+            flex-shrink: 0;
+        }
+        .lead-table-container {
+            width: calc(100% - 260px);
+            width: 1400px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 15px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            width: 150px;
+            height: 150px;
+        }
+        .stat-box i {
+            position: absolute;
+            left: 15px; /* Position from the left */
+            top: 50%; /* Center vertically */
+            transform: translateY(-50%); /* Adjust for perfect centering */
+            font-size: 24px;
+        }
+        .stat-box .number {
+            position: absolute;
+            bottom: 40px; /* Distance from the bottom */
+            right: 15px; /* Distance from the right */
+            font-size: 25px;
+            font-weight: 700;
+        }
+        .stat-box .label {
+            position: absolute;
+            bottom: 15px; /* Distance from the bottom */
+            right: 15px; /* Distance from the right */
+            font-size: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .addLead-btn {
+            margin: 10px 0;
+        }
+        .edit-btn, .delete-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .edit-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-new { background-color: #2196F3; color: white; }
+        .status-contacted { background-color: #FF9800; color: white; }
+        .status-potential { background-color: #4CAF50; color: white; }
+        .status-closed { background-color: #9C27B0; color: white; }
+        .status-failed { background-color: #f44336; color: white; }
+
+        @media (max-width: 768px) {
+            .blank-column {
+                width: 74px;
+                flex-shrink: 0;
+                transition: all 0.3s ease;
+            }
+            .lead-table-container {
+                width: 100%;
+                margin: 20px 10px;
+            }
+            table {
+                min-width: 100%;
+            }
+            th, td {
+                padding: 5px;
+                font-size: 12px;
+            }
+            .action-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .edit-btn, .delete-btn {
+                padding: 5px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <?!= navbar ?>
+    <div class="blank-column"></div>
+    <div class="lead-table-container">
+        <h2>Dashboard</h2>
+        <div class="stats-container">
+            <div class="stat-box" id="totalLeads">
+                <i class='bx bx-user'></i>
+                <div class="number">0</div>
+                <div class="label">Total Leads</div>
+            </div>
+            <div class="stat-box" id="totalNewLeads">
+                <i class='bx bx-bell'></i>
+                <div class="number">0</div>
+                <div class="label">New Leads</div>
+            </div>
+            <div class="stat-box" id="totalContactedLeads">
+                <i class='bx bx-check'></i>
+                <div class="number">0</div>
+                <div class="label">Contacted Leads</div>
+            </div>
+            <div class="stat-box" id="totalPotentialLeads">
+                <i class='bx bx-hourglass'></i>
+                <div class="number">0</div>
+                <div class="label">Potential Leads</div>
+            </div>
+            <div class="stat-box" id="totalClosedLeads">
+                <i class='bx bx-check-double'></i>
+                <div class="number">0</div>
+                <div class="label">Closed Leads</div>
+            </div>
+            <div class="stat-box" id="totalFailedLeads">
+                <i class='bx bx-x'></i>
+                <div class="number">0</div>
+                <div class="label">Failed Leads</div>
+            </div>
+        </div>
+        <form id="addLeadForm" action="<?= getScriptURL() ?>" method="get">
+            <input type="hidden" name="mode" value="addLead">
+            <button type="submit" class="edit-btn addLead-btn">Add Lead</button>
+        </form>
+        <table id="leadsTable">
+            <thead>
+                <tr>
+                    <th>Lead Name</th>
+                    <th>Email</th>
+                    <th>Contact No.</th>
+                    <th>City</th>
+                    <th>Interested In</th>
+                    <th>Status</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody id="leadsTableBody">
+                <!-- Table rows will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let currentLeads = [];
+        let leadToDelete = null;
+
+        function loadLeads() {
+            google.script.run.withSuccessHandler(displayLeads).getLeadsForCurrentUser();
+        }
+
+        function displayLeads(leads) {
+            currentLeads = leads;
+            const tableBody = document.getElementById('leadsTableBody');
+            tableBody.innerHTML = '';
+
+            let stats = {
+                totalLeads: 0,
+                totalNewLeads: 0,
+                totalContactedLeads: 0,
+                totalPotentialLeads: 0,
+                totalClosedLeads: 0,
+                totalFailedLeads: 0
+            };
+
+            leads.forEach((lead) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${lead['Lead Name']}</td>
+                    <td>${lead['Email']}</td>
+                    <td>${lead['Contact No.']}</td>
+                    <td>${lead['City']}</td>
+                    <td>${lead['Interested In']}</td>
+                    <td><span class="status-badge status-${lead['Status'].toLowerCase()}">${lead['Status']}</span></td>
+                    <td>${lead['Note']}</td>
+                `;
+                stats.totalLeads++;
+                if (lead['Status'] === 'new') stats.totalNewLeads++;
+                if (lead['Status'] === 'contacted') stats.totalContactedLeads++;
+                if (lead['Status'] === 'potential') stats.totalPotentialLeads++;
+                if (lead['Status'] === 'closed') stats.totalClosedLeads++;
+                if (lead['Status'] === 'failed') stats.totalFailedLeads++;
+            });
+
+            document.getElementById('totalLeads').querySelector('.number').innerText = stats.totalLeads;
+            document.getElementById('totalNewLeads').querySelector('.number').innerText = stats.totalNewLeads;
+            document.getElementById('totalContactedLeads').querySelector('.number').innerText = stats.totalContactedLeads;
+            document.getElementById('totalPotentialLeads').querySelector('.number').innerText = stats.totalPotentialLeads;
+            document.getElementById('totalClosedLeads').querySelector('.number').innerText = stats.totalClosedLeads;
+            document.getElementById('totalFailedLeads').querySelector('.number').innerText = stats.totalFailedLeads;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLeads();
+        });
+    </script>
+    <?!= include('js'); ?>
+</body>
+</html>

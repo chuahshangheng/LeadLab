@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <?!= include('css'); ?>
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+            background-color: #f4f4f4;
+        }
+        .blank-column {
+            width: 260px;
+            flex-shrink: 0;
+        }
+        .profile-container {
+            width: calc(100% - 260px);
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .profile-info {
+            margin-bottom: 20px;
+        }
+        .profile-info label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        .profile-info input[type="text"],
+        .profile-info input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .update-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .update-btn:hover {
+            background-color: #45a049;
+        }
+        @media (max-width: 768px) {
+            .profile-container {
+                width: calc(100% - 74px);
+                margin: 20px 10px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <?!= navbar ?>
+    <div class="blank-column"></div>
+    <div class="profile-container">
+        <h1>User Profile</h1>
+        <form id="profileForm" onsubmit="showLoading()">
+            <div class="profile-info">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" value="<?= userDetails.username ?>" readonly>
+            </div>
+            <div class="profile-info">
+                <label for="fullname">Full Name:</label>
+                <input type="text" id="fullname" name="fullname" value="<?= userDetails.fullname ?>" required>
+            </div>
+            <div class="profile-info">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="<?= userDetails.email ?>" required>
+            </div>
+            <div class="profile-info">
+                <label for="contact">Contact:</label>
+                <input type="text" id="contact" name="contact" value="<?= userDetails.contact ?>" required>
+            </div>
+            <input type="hidden" name="action" value="updateProfile">
+            <button type="submit" class="update-btn">Update Profile</button>
+        </form>
+    </div>
+
+    <!-- Popup Box -->
+    <div id="popupBox" class="popup-box">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon"></div>
+            <h2 id="popupTitle">Title</h2>
+            <p id="popupMessage">Message</p>
+            <button id="popupButton" onclick="closePopup()">OK</button>
+        </div>
+    </div>
+
+    <script>
+        function showPopup(title, message, iconClass, onClose) {
+            document.getElementById('popupTitle').textContent = title;
+            document.getElementById('popupMessage').textContent = message;
+            var iconContainer = document.getElementById('popupIcon');
+            iconContainer.innerHTML = `<i class='bx ${iconClass}'></i>`;
+            iconContainer.className = `popup-icon ${iconClass === 'bxs-error-circle' ? 'error' : 'success'}`;
+            document.getElementById('popupBox').style.display = 'block';
+            document.getElementById('popupButton').onclick = function() {
+                closePopup();
+                if (onClose) onClose();
+            };
+        }
+
+        function closePopup() {
+            document.getElementById('popupBox').style.display = 'none';
+        }
+
+        function showLoading() {
+            const button = document.querySelector('button[type="submit"]');
+            button.textContent = 'Loading...';
+            button.disabled = true;
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', function(event) {
+            // Perform client-side validation
+            var fullname = document.getElementById('fullname').value;
+            var email = document.getElementById('email').value;
+            var contact = document.getElementById('contact').value;
+
+            if (!fullname || !email || !contact) {
+                showPopup('Validation Error', 'All fields are required.', 'bxs-error-circle');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showPopup('Validation Error', 'Invalid email format.', 'bxs-error-circle');
+                return;
+            }
+
+            // Submit the form if validation passes
+            event.preventDefault();
+            var formData = new FormData(event.target);
+
+            fetch('<?= ScriptApp.getService().getUrl() ?>', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                showPopup(
+                    data.messageType === "success" ? "Success" : "Error",
+                    data.message,
+                    data.messageType === "success" ? "bxs-check-circle" : "bxs-error-circle",
+                    function() {
+                        if (data.messageType === "success") {
+                            if (data.updatedUserDetails) {
+                                // Update the form fields with the new data
+                                document.getElementById('username').value = data.updatedUserDetails.username;
+                                document.getElementById('fullname').value = data.updatedUserDetails.fullname;
+                                document.getElementById('email').value = data.updatedUserDetails.email;
+                                document.getElementById('contact').value = data.updatedUserDetails.contact;
+                            }
+                            if (data.redirect) {
+                                window.top.location.href = data.redirect;
+                            }
+                        }
+                    }
+                );
+            })
+            .catch(error => console.error('Error:', error))
+            .finally(() => {
+                // Re-enable the submit button and reset its text
+                const button = document.querySelector('button[type="submit"]');
+                button.textContent = 'Update Profile';
+                button.disabled = false;
+            });
+        });
+
+        function validateEmail(email) {
+            var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+    </script>
+    <?!= include('js'); ?>
+</body>
+</html>

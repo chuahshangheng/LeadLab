@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Leads</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <?!= include('css'); ?>
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
+</head>
+<body>
+    <?!= navbar ?>
+    <div class="blank-column">
+    </div>
+    <div class="lead-table-container">
+        <h2>Manage Leads</h2>
+        <form id="addLeadForm" action="<?= getScriptURL() ?>" method="get">
+            <input type="hidden" name="mode" value="addLead">
+            <button type="submit" class="edit-btn addLead-btn">Add Lead</button>
+        </form>
+        <table id="leadsTable">
+            <thead>
+                <tr>
+                    <th>Lead Name</th>
+                    <th>Email</th>
+                    <th>Contact No.</th>
+                    <th>City</th>
+                    <th>Interested In</th>
+                    <th>Status</th>
+                    <th>Note</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="leadsTableBody">
+                <!-- Table rows will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Popup Box for Update -->
+    <div id="updatePopup" class="popup-box" style="display: none;">
+        <div class="lead-form-container">
+            <h2>Update Lead</h2>
+            <form id="updateLeadForm" onsubmit="showLoading()">
+                <input type="hidden" id="updateLeadId" name="Lead ID">
+                <div class="form-row">
+                    <div class="form-column">
+                        <label for="updateLeadName">Lead Name</label>
+                        <input type="text" id="updateLeadName" name="Lead Name" placeholder="Lead Name" required>
+                        
+                        <label for="updateEmail">Email</label>
+                        <input type="email" id="updateEmail" name="Email" placeholder="Email" required>
+                        
+                        <label for="updateContactNo">Contact No.</label>
+                        <input type="text" id="updateContactNo" name="Contact No." placeholder="Contact No." required>
+                    </div>
+                    <div class="form-column">
+                        <label for="updateCity">City</label>
+                        <input type="text" id="updateCity" name="City" placeholder="City" required>
+                        
+                        <label for="updateInterestedIn">Interested In</label>
+                        <select id="updateInterestedIn" name="Interested In" required>
+                            <option value="Real Estate">Real Estate</option>
+                            <option value="Automobiles">Automobiles</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Home Appliances">Home Appliances</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Jobs">Jobs</option>
+                            <option value="Services">Services</option>
+                            <option value="Events">Events</option>
+                            <option value="Education">Education</option>
+                            <option value="Health & Fitness">Health & Fitness</option>
+                            <option value="Beauty & Fashion">Beauty & Fashion</option>
+                            <option value="Pets & Animals">Pets & Animals</option>
+                            <option value="Travel & Tourism">Travel & Tourism</option>
+                            <option value="Food & Beverages">Food & Beverages</option>
+                            <option value="Art & Collectibles">Art & Collectibles</option>
+                            <option value="Sports & Outdoors">Sports & Outdoors</option>
+                            <option value="Books & Media">Books & Media</option>
+                            <option value="Baby & Kids">Baby & Kids</option>
+                            <option value="Industrial Equipment">Industrial Equipment</option>
+                            <option value="Gardening & Outdoor Living">Gardening & Outdoor Living</option>
+                            <option value="Music & Instruments">Music & Instruments</option>
+                            <option value="Office Supplies & Equipment">Office Supplies & Equipment</option>
+                            <option value="Software & Applications">Software & Applications</option>
+                            <option value="Toys & Games">Toys & Games</option>
+                            <option value="DIY & Crafts">DIY & Crafts</option>
+                            <option value="Construction & Renovation">Construction & Renovation</option>
+                            <option value="Agricultural Products">Agricultural Products</option>
+                            <option value="Renewable Energy & Green Products">Renewable Energy & Green Products</option>
+                            <option value="Financial Services">Financial Services</option>
+                            <option value="Legal Services">Legal Services</option>
+                            <option value="Transportation & Logistics">Transportation & Logistics</option>
+                            <option value="Hospitality & Catering">Hospitality & Catering</option>
+                            <option value="Marketing & Advertising">Marketing & Advertising</option>
+                            <option value="Photography & Videography">Photography & Videography</option>
+                            <option value="IT & Networking">IT & Networking</option>
+                            <option value="Cleaning & Maintenance">Cleaning & Maintenance</option>
+                            <option value="Security & Surveillance">Security & Surveillance</option>
+                            <option value="Gifts & Occasions">Gifts & Occasions</option>
+                            <option value="Luxury Items">Luxury Items</option>
+                            <option value="Personal Development & Coaching">Personal Development & Coaching</option>
+                            <option value="Religious & Spiritual">Religious & Spiritual</option>
+                            <option value="Community & Social Services">Community & Social Services</option>
+                            <option value="Environment & Nature">Environment & Nature</option>
+                            <option value="Philanthropy & Non-Profits">Philanthropy & Non-Profits</option>
+                        </select>
+
+                        <input type="hidden" id="updateStatus" name="Status">
+
+                        <label for="updateNote">Note (optional)</label>
+                        <textarea id="updateNote" name="Note" placeholder="Note (optional)"></textarea>
+                    </div>
+                </div>
+                <input type="hidden" id="username" name="Username (Login)" value="<?= userDetails.username ?>">
+                <button type="submit">Update</button>
+                <button class="cancel-btn" type="button" onclick="closeUpdatePopup()">Cancel</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Popup Box -->
+    <div id="popupBox" class="popup-box" style="display:none;">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon"></div>
+            <h2 id="popupTitle">Title</h2>
+            <p id="popupMessage">Message</p>
+            <button id="popupButton" onclick="closePopup()">OK</button>
+        </div>
+    </div>
+
+    <!-- Confirmation Delete Popup Box -->
+    <div id="confirmationPopup" class="popup-box" style="display: none;">
+        <div class="popup-content">
+            <div id="confirmationPopupIcon" class="popup-icon"></div>
+            <h2 id="confirmationPopupTitle">Confirmation</h2>
+            <p id="confirmationPopupMessage">Are you sure you want to delete this lead?</p>
+            <button id="confirmButton" class="confirm-btn">Yes</button>
+            <button id="cancelButton" class="cancel-btn">No</button>
+        </div>
+    </div>
+
+    <script>
+        function showPopup(title, message, iconClass, onClose) {
+            document.getElementById('popupTitle').textContent = title;
+            document.getElementById('popupMessage').textContent = message;
+            var iconContainer = document.getElementById('popupIcon');
+            iconContainer.innerHTML = `<i class='bx ${iconClass}'></i>`;
+            iconContainer.className = `popup-icon ${iconClass === 'bxs-error-circle' ? 'error' : 'success'}`;
+            document.getElementById('popupBox').style.display = 'block';
+            document.getElementById('popupButton').onclick = function() {
+                closePopup();
+                if (onClose) onClose();
+            };
+        }
+
+        function closePopup() {
+            document.getElementById('popupBox').style.display = 'none';
+        }
+        
+        function showConfirmationPopup(onConfirm) {
+            document.getElementById('confirmationPopup').style.display = 'block';
+            document.getElementById('confirmButton').onclick = function() {
+                closeConfirmationPopup();
+                if (onConfirm) onConfirm();
+            };
+            document.getElementById('cancelButton').onclick = function() {
+                closeConfirmationPopup();
+            };
+        }
+
+        function closeConfirmationPopup() {
+            document.getElementById('confirmationPopup').style.display = 'none';
+        }
+
+        function showLoading() {
+            const button = document.querySelector('#updateLeadForm button[type="submit"]');
+            button.textContent = 'Loading...';
+            button.disabled = true;
+        }
+
+        function hideLoading() {
+            const button = document.querySelector('#updateLeadForm button[type="submit"]');
+            button.textContent = 'Update';
+            button.disabled = false;
+        }
+
+        let currentLeads = [];
+        let leadToDelete = null;
+
+        function loadLeads() {
+            google.script.run.withSuccessHandler(displayLeads).getLeadsForCurrentUser();
+        }
+
+        function displayLeads(leads) {
+            currentLeads = leads;
+            const tableBody = document.getElementById('leadsTableBody');
+            tableBody.innerHTML = '';
+
+            leads.forEach((lead, index) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${lead['Lead Name']}</td>
+                    <td>${lead['Email']}</td>
+                    <td>${lead['Contact No.']}</td>
+                    <td>${lead['City']}</td>
+                    <td>${lead['Interested In']}</td>
+                    <td><span class="status-badge status-${lead['Status'].toLowerCase()}">${lead['Status']}</span></td>
+                    <td>${lead['Note']}</td>
+                    <td class="action-buttons">
+                        <button class="edit-btn" onclick="openUpdatePopup(${index})"><i class='bx bx-edit-alt'></i></button>
+                        <button class="delete-btn" onclick="confirmDelete(${lead['Lead ID']})"><i class='bx bx-trash'></i></button>
+                    </td>
+                `;
+            });
+        }
+
+        function openUpdatePopup(index) {
+            const lead = currentLeads[index];
+            document.getElementById('updateLeadId').value = lead['Lead ID'];
+            document.getElementById('updateLeadName').value = lead['Lead Name'];
+            document.getElementById('updateEmail').value = lead['Email'];
+            document.getElementById('updateContactNo').value = lead['Contact No.'];
+            document.getElementById('updateCity').value = lead['City'];
+            document.getElementById('updateInterestedIn').value = lead['Interested In'];
+            document.getElementById('updateStatus').value = lead['Status'];
+            document.getElementById('updateNote').value = lead['Note'];
+            document.getElementById('updatePopup').style.display = 'block';
+        }
+
+        function closeUpdatePopup() {
+            document.getElementById('updatePopup').style.display = 'none';
+        }
+
+        function confirmDelete(leadId) {
+            leadToDelete = leadId;
+            showConfirmationPopup(function() {
+                google.script.run.withSuccessHandler(loadLeads).deleteLead(leadToDelete);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLeads();
+            document.getElementById('updateLeadForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                const leadData = Object.fromEntries(formData.entries());
+
+                google.script.run
+                    .withSuccessHandler(function(response) {
+                        hideLoading();
+                        if (response.messageType === 'success') {
+                            closeUpdatePopup();
+                            loadLeads(); // Refresh leads after update
+                            showPopup('Success', 'Lead updated successfully!', 'bxs-check-circle');
+                        } else {
+                            showPopup('Error', response.message, 'bxs-error-circle');
+                        }
+                    })
+                    .withFailureHandler(function(error) {
+                        hideLoading();
+                        showPopup('Error', 'An error occurred: ' + error.message, 'bxs-error-circle');
+                    })
+                    .updateLead(leadData);
+            });
+        });
+    </script>
+    <?!= include('js'); ?>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<script>
+    let toggleItems = document.querySelectorAll(".icon-link");
+    toggleItems.forEach(item => {
+        item.addEventListener("click", (e) => {
+            let arrowParent = item.parentElement;
+            let isSubMenuVisible = arrowParent.classList.contains("showMenu")
+            // Remove active and showMenu classes from all main items
+            document.querySelectorAll('.nav-links li').forEach(li => {
+                li.classList.remove('active');
+                li.classList.remove('showMenu');
+                let toggleBtn = li.querySelector(".toggle-btn i");
+                if (toggleBtn) {
+                    toggleBtn.classList.remove('rotate');
+                }
+            })
+            // If the clicked item was not previously visible, show its submenu
+            if (!isSubMenuVisible) {
+                arrowParent.classList.add('showMenu');
+                arrowParent.classList.add('active');
+                // Toggle rotation class for the icon
+                let toggleBtn = item.querySelector(".toggle-btn i");
+                toggleBtn.classList.toggle("rotate");
+            }
+        });
+    })
+    // Add event listeners for submenu items
+    let submenuItems = document.querySelectorAll(".sub-menu a");
+    submenuItems.forEach(link => {
+        link.addEventListener("click", (e) => {
+            // Remove active class from all items
+            document.querySelectorAll('.nav-links li').forEach(li => {
+                li.classList.remove('active');
+            });
+            // Add active class to the parent list item
+            link.closest("li").classList.add('active');
+            // Highlight the parent of the submenu
+            let parentItem = link.closest("li").parentElement.closest("li");
+            parentItem.classList.add('active');
+        });
+    })
+    // Handle dashboard link separately
+    document.querySelector('.nav-links li a[href="#"]').addEventListener("click", (e) => {
+        document.querySelectorAll('.nav-links li').forEach(li => {
+            li.classList.remove('active');
+        });
+        e.target.closest("li").classList.add('active');
+    })
+    // Handle Profile link
+    document.querySelector('.nav-links li .bxs-user-circle').closest("li").addEventListener("click", (e) => {
+        document.querySelectorAll('.nav-links li').forEach(li => {
+            li.classList.remove('active');
+        });
+        e.target.closest("li").classList.add('active');
+    })
+
+</script>
